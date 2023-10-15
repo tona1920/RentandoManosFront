@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rentandomanos/src/models/user.dart';
+import 'package:flutter_rentandomanos/src/providers/users_provider.dart';
 import 'package:get/get.dart';
 
 class RegisterController extends GetxController{
@@ -9,7 +11,9 @@ class RegisterController extends GetxController{
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmpasswordController = TextEditingController();
 
-  void register(){
+  UsersProvider usersProvider = UsersProvider();
+
+  void register() async{
     String email = emailController.text.trim();
     String name = nameController.text;
     String lastname = lastnameController.text;
@@ -21,6 +25,18 @@ class RegisterController extends GetxController{
     print('Password ${password}');
 
     if(isValidForm(email,name,lastname,phone,password,confirmpassword)){
+      User user = User(
+        email: email,
+        name: name,
+        lastname: lastname,
+        phone: phone,
+        password: password,
+      );
+      
+      Response response = await usersProvider.create(user);
+
+      print('RESPONSE: ${response.body}');
+
       Get.snackbar('Formulario valido', 'Estas listo para enviar la peticion http');
     }
   }
