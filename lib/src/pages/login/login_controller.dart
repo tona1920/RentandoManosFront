@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rentandomanos/src/models/response_api.dart';
+import 'package:flutter_rentandomanos/src/providers/users_provider.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController{
@@ -6,11 +8,13 @@ class LoginController extends GetxController{
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  UsersProvider usersProvider = UsersProvider();
+
   void goToRegisterPage(){
     Get.toNamed('/register');
   }
 
-  void login(){
+  void login() async{
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
@@ -18,7 +22,15 @@ class LoginController extends GetxController{
     print('Password ${password}');
 
     if(isValidForm(email,password)){
-      Get.snackbar('Formulario valido', 'Estas listo para enviar la peticion http');
+      ResponseApi responseApi = await usersProvider.login(email, password);
+
+      print('Response Api: ${responseApi.toJson()}');
+      if(responseApi.success == true){
+        Get.snackbar('Login exitoso', responseApi.message ?? ''); //Null safety
+      }else{
+        Get.snackbar('Login fallido', responseApi.message ?? '');
+      }
+
     }
   }
 
